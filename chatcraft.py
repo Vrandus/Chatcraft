@@ -16,7 +16,7 @@ async def on_message(message):
         await message.channel.send('Hello!')
 
 token = ""
-with open('token', 'r') as file:
+with open('token.txt', 'r') as file:
      token = file.readline()
      file.close()
 

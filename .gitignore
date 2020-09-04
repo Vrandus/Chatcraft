@@ -27,4 +27,4 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-token.txt
+*.txt

@@ -4,32 +4,47 @@ import os
 import threading
 import time
 import asyncio
+
+
 client = discord.Client()
 
-queue = []
-def chat_listener(channel):
+
+def between_listener(loop, channel):
+    # loop = asyncio.get_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(chat_listener(channel))
+    loop.close()
+async def chat_listener(channel):
     path = "../logs/latest.log"
     current = open(path, "r")
     print("file opened")
     print(channel.id)
     minecraft_channel = client.get_channel(channel.id)
+    # loop = asyncio.new_event_loop()
+    # asyncio.set_event_loop(loop)
     while 1:
-        time.sleep(0.1)
+        # time.sleep(0.1)
         str = current.readline()
         if "[Server]" not in str:
             if "<" and ">" in str:
+                
+                await send_message(minecraft_channel, str)
 
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-                loop.run_until_complete(send_message(minecraft_channel, str))
-                loop.close()
+                # loop = asyncio.new_event_loop()
+                # loop.run_until_complete(send_message(minecraft_channel, str))
+
+                
                 print(str)
                 # minecraft_channel.send(content=str)
-
-
+        try:
+            await client.wait_for('message', timeout=0.1)
+        except:
+            # print("DEBUG: no new messages")
+            continue 
     current.close()
 async def send_message(channel, message):
     await channel.send(message)
+
 @client.event
 async def on_ready():
     print('logged in as {0.user}'.format(client))
@@ -38,18 +53,22 @@ async def on_ready():
     for channel in client.get_all_channels():
         if channel.name == channel_name:
             perm_channel = channel
-
-    x = threading.Thread(target=chat_listener, args=(perm_channel,),  daemon=True)
+            await perm_channel.send("Bot initialized")
+    loop = client.loop
+    x = threading.Thread(target=between_listener, args=(loop, perm_channel,),  daemon=True)
     x.start()
+    
+    
 
 @client.event
 async def on_message(message):
     if message.author == client.user or message.channel.name != channel_name:
         return
+    
     command = f'screen -S mcserver -p 0 -X stuff "say [{message.author}] {message.content} ^M"'
+
     os.system(command)
-    # if message.content.startswith('$hello'):
-    #     await message.channel.send('Hello!')
+
 
 token = ""
 channel_name = ""
@@ -65,3 +84,4 @@ with open('bot.properties', 'r') as file:
     file.close()
 
 client.run(token)
+

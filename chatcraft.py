@@ -16,44 +16,68 @@ def between_listener(loop, channel):
     loop.close()
 async def chat_listener(channel):
     path = "../logs/latest.log"
-    current = open(path, "r")
+    log_file = open(path, "r")
+    while 1:
+        if len(log_file.readline()) < 4 :
+            break
+    UUID = {}
     print("file opened")
     print(channel.id)
     minecraft_channel = client.get_channel(channel.id)
-    # loop = asyncio.new_event_loop()
-    # asyncio.set_event_loop(loop)
     while 1:
-        # time.sleep(0.1)
-        str = current.readline()
+        str = log_file.readline()
+        # print(str)
+        if "*:25565" in str:
+            print("server restart")
+            embedded = discord.Embed(title="Server is Up!", colour=discord.Colour.green(), type="rich")
+            await send_message(minecraft_channel, embedded, True)
+        if "UUID of player" in str:
+            split_str = str.split()
+            UUID[split_str[7]] = split_str[9]
+            # UUID[str[str.index("player")+7]] = str[str.index(" is ")+4:-1]
+        
+        if "joined" in str or "left" in str:
+            # print("joined" in str or "left" in str)
+            split_str = str.split()
+
+            if "joined" in str:
+                embedded = discord.Embed(title=str[33:], colour=discord.Colour.green(), type="rich")
+            else:
+                embedded = discord.Embed(title=str[33:], colour=discord.Colour.red(), type="rich")
+            url = f'https://crafatar.com/avatars/{UUID[split_str[3]]}?size=32'
+            print(url)
+
+            embedded.set_thumbnail(url=url)
+            await send_message(minecraft_channel, embedded, True)
+            # print("DEBUG: in joined or left UUID: " + cached_UUID)
         if "[Server]" not in str:
             if "<" and ">" in str:
-                
-                await send_message(minecraft_channel, str)
+                str = str[33:]
 
-                # loop = asyncio.new_event_loop()
-                # loop.run_until_complete(send_message(minecraft_channel, str))
-
-                
+                await send_message(minecraft_channel, str, False)
                 print(str)
-                # minecraft_channel.send(content=str)
         try:
             await client.wait_for('message', timeout=0.1)
         except:
-            # print("DEBUG: no new messages")
             continue 
-    current.close()
-async def send_message(channel, message):
-    await channel.send(message)
+    log_file.close()
+
+async def send_message(channel, message, embedded):
+    if embedded == True:
+        await channel.send(embed=message)
+    else:    
+        await channel.send(message)
 
 @client.event
 async def on_ready():
     print('logged in as {0.user}'.format(client))
     perm_channel = discord.TextChannel
     print(channel_name)
+    await client.change_presence(activity=discord.Game(name=ip))
     for channel in client.get_all_channels():
         if channel.name == channel_name:
             perm_channel = channel
-            await perm_channel.send("Bot initialized")
+
     loop = client.loop
     x = threading.Thread(target=between_listener, args=(loop, perm_channel,),  daemon=True)
     x.start()
@@ -65,13 +89,14 @@ async def on_message(message):
     if message.author == client.user or message.channel.name != channel_name:
         return
     
-    command = f'screen -S mcserver -p 0 -X stuff "say [{message.author}] {message.content} ^M"'
+    command = f'screen -S mcserver -p 0 -X stuff "say <{message.author}> {message.content} ^M"'
 
     os.system(command)
 
 
 token = ""
 channel_name = ""
+ip = ""
 with open('bot.properties', 'r') as file:
     channel_name = file.readline()
     channel_name = channel_name[channel_name.index("=")+1: -1]
@@ -79,6 +104,8 @@ with open('bot.properties', 'r') as file:
 
     token = file.readline()
     token = token[token.index("=")+1:]
+    ip = file.readline()
+    ip = ip[ip.index("=")+1:]
     print(token)
 
     file.close()

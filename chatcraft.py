@@ -8,6 +8,11 @@ import asyncio
 
 client = discord.Client()
 
+keywords_death = {"shot", "pummeled", "death", "escape", 
+    "drowned", "up", "killed", "hit", "fell", "squashed",
+    "flames", "walked", "fighting", "went", "swim", "lightning",
+     "lava", "slain", "fireballed", "suffocated", "squished",
+      "impaled", "live", "withered", "died"}
 
 def between_listener(loop, channel):
     # loop = asyncio.get_event_loop()
@@ -44,11 +49,14 @@ async def chat_listener(channel):
                 embedded = discord.Embed(title=str[33:], colour=discord.Colour.green(), type="rich")
             else:
                 embedded = discord.Embed(title=str[33:], colour=discord.Colour.red(), type="rich")
-            url = f'https://crafatar.com/avatars/{UUID[split_str[3]]}?size=32'
-            print(url)
-
-            embedded.set_thumbnail(url=url)
-            await send_message(minecraft_channel, embedded, True)
+            
+            try:
+                url = f'https://crafatar.com/avatars/{UUID[split_str[3]]}?size=32'
+                print(url)
+                embedded.set_thumbnail(url=url)
+            except:
+                await send_message(minecraft_channel, embedded, True)
+                continue
             # print("DEBUG: in joined or left UUID: " + cached_UUID)
         if "[Server]" not in str:
             if "<" and ">" in str:
@@ -56,6 +64,18 @@ async def chat_listener(channel):
 
                 await send_message(minecraft_channel, str, False)
                 print(str)
+            else:
+                split_str = str.split()
+                check_death = set(split_str)
+                if len(check_death & keywords_death) >= 1:
+                    embedded = discord.Embed(title=str[33:], colour=discord.Colour.default(), type="rich")
+                    try:
+                        url = f'https://crafatar.com/avatars/{UUID[split_str[3]]}?size=32'
+                        embedded.set_thumbnail(url=url)
+                    except:
+                        await send_message(minecraft_channel, embedded, True)
+                        continue
+
         try:
             await client.wait_for('message', timeout=0.1)
         except:

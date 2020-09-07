@@ -50,16 +50,18 @@ async def chat_listener(channel):
             else:
                 embedded = discord.Embed(title=str[33:], colour=discord.Colour.red(), type="rich")
             
-            try:
-                url = f'https://crafatar.com/avatars/{UUID[split_str[3]]}?size=32'
+
+            if split_str[3] in UUID.keys():
+                url = f'https://crafatar.com/avatars/{UUID[split_str[3]]}?size=24'
                 print(url)
                 embedded.set_thumbnail(url=url)
-            except:
-                await send_message(minecraft_channel, embedded, True)
-                continue
+            await send_message(minecraft_channel, embedded, True)
+            
+
+
             # print("DEBUG: in joined or left UUID: " + cached_UUID)
         if "[Server]" not in str:
-            if "<" and ">" in str:
+            if "<" in str and ">" in str and "<null>" not in str:
                 str = str[33:]
 
                 await send_message(minecraft_channel, str, False)
@@ -69,12 +71,13 @@ async def chat_listener(channel):
                 check_death = set(split_str)
                 if len(check_death & keywords_death) >= 1:
                     embedded = discord.Embed(title=str[33:], colour=discord.Colour.default(), type="rich")
-                    try:
-                        url = f'https://crafatar.com/avatars/{UUID[split_str[3]]}?size=32'
+                    
+                    
+                    if split_str[3] in UUID.keys():
+                        url = f'https://crafatar.com/avatars/{UUID[split_str[3]]}?size=24'
                         embedded.set_thumbnail(url=url)
-                    except:
-                        await send_message(minecraft_channel, embedded, True)
-                        continue
+                    await send_message(minecraft_channel, embedded, True)
+                    
 
         try:
             await client.wait_for('message', timeout=0.1)

@@ -15,7 +15,6 @@ keywords_death = {"shot", "pummeled", "death", "escape",
       "impaled", "live", "withered", "died"}
 
 def between_listener(loop, channel):
-    # loop = asyncio.get_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(chat_listener(channel))
     loop.close()
@@ -31,18 +30,16 @@ async def chat_listener(channel):
     minecraft_channel = client.get_channel(channel.id)
     while 1:
         str = log_file.readline()
-        # print(str)
         if "*:25565" in str:
             print("server restart")
             embedded = discord.Embed(title="Server is Up!", colour=discord.Colour.green(), type="rich")
             await send_message(minecraft_channel, embedded, True)
+        
         if "UUID of player" in str:
             split_str = str.split()
             UUID[split_str[7]] = split_str[9]
-            # UUID[str[str.index("player")+7]] = str[str.index(" is ")+4:-1]
-        
+
         if "joined" in str or "left" in str:
-            # print("joined" in str or "left" in str)
             split_str = str.split()
 
             if "joined" in str:
@@ -59,7 +56,6 @@ async def chat_listener(channel):
             
 
 
-            # print("DEBUG: in joined or left UUID: " + cached_UUID)
         if "[Server]" not in str:
             if "<" in str and ">" in str and "<null>" not in str:
                 str = str[33:]

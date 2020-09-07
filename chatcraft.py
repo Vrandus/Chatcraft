@@ -4,7 +4,7 @@ import os
 import threading
 import time
 import asyncio
-
+import emoji
 
 client = discord.Client()
 
@@ -56,7 +56,7 @@ async def chat_listener(channel):
             
 
 
-        if "[Server]" not in str:
+        if "[Server]" not in str and "[Server thread/INFO]: /" not in str:
             if "<" in str and ">" in str and "<null>" not in str:
                 str = str[33:]
 
@@ -108,7 +108,10 @@ async def on_message(message):
     if message.author == client.user or message.channel.name != channel_name:
         return
     
-    command = f'screen -S mcserver -p 0 -X stuff "say <{message.author}> {message.content} ^M"'
+    # print(emoji.demojize(message.content))
+    if len(message.attachments) > 0:
+        message.content = message.content +": Uploaded Attachment"
+    command = f'screen -S mcserver -p 0 -X stuff "say <{message.author}> {emoji.demojize(message.content)} ^M"'
 
     os.system(command)
 

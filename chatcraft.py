@@ -62,7 +62,7 @@ async def chat_listener(channel):
 
                 await send_message(minecraft_channel, str, False)
                 print(str)
-            else:
+            elif "ServerLevel" not in str:
                 split_str = str.split()
                 check_death = set(split_str)
                 if len(check_death & keywords_death) >= 1:

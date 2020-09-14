@@ -25,7 +25,7 @@ append the following to your crontab and start the cron service.
 ```
 # Run healthcheck.sh every minute
 * * * * * /home/minecraft/healthcheck.sh
-# Run a restart script for the discord bot every 3 hours
-0 */3 * * * /home/minecraft/start-bot.sh
+# Run a restart script for the discord bot every 2 hours
+0 */2 * * * /home/minecraft/start-bot.sh
 
 ```

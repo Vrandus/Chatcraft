@@ -8,13 +8,21 @@ My friends and I wanted to play some minecraft, but it was hard to keep track of
 ## Requirements
 * Linux
 * [A vanilla Minecraft server](https://www.minecraft.net/en-us/download/server) (probably also works on a modded server)
-* [Python 3.6+](https://www.python.org/downloads/)
-* [Discord.py](https://pypi.org/project/discord.py/)
-* [GNU Screen](https://www.gnu.org/software/screen/)
-* [discord api key](https://discord.com/developers/docs/intro)
-* Cron
+* Install [Python 3.6+](https://www.python.org/downloads/)
+* Install [Discord.py](https://pypi.org/project/discord.py/)
+* Install [GNU Screen](https://www.gnu.org/software/screen/)
+*  Get a[Discord API key](https://discord.com/developers/docs/intro)
+* Check Cron Status
 ## Installation 
-1. Install [Python 3.6](https://www.python.org/downloads/)
-2. Install [Discord.py](https://pypi.org/project/discord.py/)
-3. Install GNU Screen
-4. Get an [API key for your bot from Discord](https://discord.com/developers/docs/intro)
+```
+# git clone into your server root folder
+git clone https://github.com/Vrandus/Chatcraft.git
+
+# Run chatcraft.py using screen or normally
+
+python3.6 chatcraft.py
+
+screen -S bot -d -m python3.6 chatcraft.py
+
+```
+*You can find some more useful scripts [here](https://github.com/Vrandus/Chatcraft/tree/master/useful%20scripts)*

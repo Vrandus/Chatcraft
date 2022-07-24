@@ -1,0 +1,5 @@
+{
+    "channel" : "buildtogether-1",
+    "ip" : "ip",
+    "logPath" : "/home/ec2-user/minecraft/1.19/logs/"
+}
